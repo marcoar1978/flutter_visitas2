@@ -1,0 +1,3 @@
+
+
+enum OpcaoData  {LABEL, DB}
