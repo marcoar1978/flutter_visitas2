@@ -102,7 +102,7 @@ class _CadastroVisitaState extends State<CadastroVisita> {
         //border: OutlineInputBorder(),
       ),
       onChanged: (text) {
-        this.visitaForm.titulo = text;
+        if(this.tipoForm == 'alt') this.visitaForm.titulo = text;
       },
       validator: (text) {
         if (text.isEmpty) {
@@ -266,7 +266,7 @@ class _CadastroVisitaState extends State<CadastroVisita> {
             onChanged: (c) {
               setState(() {
                 this.selectContato = c;
-                this.visitaForm.contato = c.id;
+                if(this.tipoForm == 'alt') this.visitaForm.contato = c.id;
               });
             },
             validator: (value) {
@@ -316,7 +316,7 @@ class _CadastroVisitaState extends State<CadastroVisita> {
               onChanged: (c) {
                 setState(() {
                   this.selectCliente = c;
-                  this.visitaForm.cliente = c.id;
+                  if(this.tipoForm == 'alt') this.visitaForm.cliente = c.id;
                 });
               },
               validator: (value) {
@@ -375,7 +375,7 @@ class _CadastroVisitaState extends State<CadastroVisita> {
             );
             setState(() {
               this.data = dataEcolhida ?? this.data;
-              this.visitaForm.data = this.formatadataLabel(opcaoData: "db");
+              if(this.tipoForm == 'alt') this.visitaForm.data = this.formatadataLabel(opcaoData: "db");
             });
           },
         ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:visitas_app5/components/progress.dart';
+import 'package:visitas_app5/database/daos/audio_dao.dart';
 import 'package:visitas_app5/database/daos/fotos_dao.dart';
 import 'package:visitas_app5/database/daos/visita_dao.dart';
+import 'package:visitas_app5/models/audio_model.dart';
 
 import 'package:visitas_app5/models/visita_model.dart';
 import 'package:visitas_app5/screens/cadastro_visita.dart';

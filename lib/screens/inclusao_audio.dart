@@ -18,9 +18,12 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
   FlutterAudioRecorder _recorder;
   Recording _recording;
   Widget _buttonIcon = Icon(
-    Icons.play_circle_filled,
+    Icons.record_voice_over,
     size: 48.0,
   );
+  String statusGravacao = '--';
+  String duracaoGravacao = '';
+  String pathGravacao = '';
 
   @override
   void initState() {
@@ -61,7 +64,6 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
       _recorder = FlutterAudioRecorder(customPath,
           audioFormat: AudioFormat.WAV, sampleRate: 22050);
       await _recorder.initialized;
-
     }
   }
 
@@ -70,7 +72,11 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
     var result = await _recorder.current();
     setState(() {
       _recording = result;
-      _buttonIcon = Icon(Icons.play_circle_filled, size: 48.0,);
+      this.statusGravacao = _recording.status.toString();
+      _buttonIcon = Icon(
+        Icons.mic_none,
+        size: 48.0,
+      );
     });
   }
 
@@ -80,16 +86,19 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
     var current = await _recorder.current();
     setState(() {
       _recording = current;
+      this.statusGravacao = _recording.status.toString();
     });
   }
 
   Future _stopRecording() async {
     var result = await _recorder.stop();
-
     setState(() {
       _recording = result;
-      });
-
+      this.statusGravacao = _recording.status.toString();
+      this.duracaoGravacao = _recording.duration.inSeconds.toString();
+      this.pathGravacao = _recording.path;
+    });
+    this._prepare();
   }
 
   void _opt() async {
@@ -105,11 +114,12 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
 
           break;
         }
+      /*
       case RecordingStatus.Stopped:
         {
           await _prepare();
           break;
-        }
+        }*/
       default:
         break;
     }
@@ -135,18 +145,17 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
             size: 48.0,
           );
         }
-      case  RecordingStatus.Stopped:
+      case RecordingStatus.Stopped:
         {
           return Icon(
-            Icons.play_circle_filled,
+            Icons.mic_none,
             size: 48.0,
           );
-
         }
 
       default:
         return Icon(
-          Icons.play_circle_filled,
+          Icons.mic_none,
           size: 48.0,
         );
     }
@@ -169,7 +178,19 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
                   this._opt();
                   //this._init();
                 },
-                child: this._buttonIcon)
+                child: this._buttonIcon),
+            SizedBox(
+              height: 15,
+            ),
+            Text(this.statusGravacao),
+            SizedBox(
+              height: 15,
+            ),
+            Text(this.pathGravacao),
+            SizedBox(
+              height: 15,
+            ),
+            Text(this.duracaoGravacao)
           ],
         ),
       ),
