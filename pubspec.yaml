@@ -23,6 +23,8 @@ dependencies:
   path_provider:
   sqflite:
   url_launcher:
+  flutter_audio_recorder:
+  audioplayers:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

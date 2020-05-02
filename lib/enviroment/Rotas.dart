@@ -1,11 +1,13 @@
 import 'package:visitas_app5/screens/cadastro_visita.dart';
 import 'package:visitas_app5/screens/consulta_visita.dart';
 import 'package:visitas_app5/screens/detalhe_foto.dart';
+import 'package:visitas_app5/screens/inclusao_audio.dart';
 import 'package:visitas_app5/screens/inclusao_fotos.dart';
 import 'package:visitas_app5/screens/lista_clientes.dart';
 import 'package:visitas_app5/screens/lista_contatos.dart';
 import 'package:visitas_app5/screens/lista_visitas.dart';
 import 'package:visitas_app5/screens/tab_visitas.dart';
+import 'package:visitas_app5/screens/inclusao_audio.dart';
 
 class Rotas{
   static final rotas = {
@@ -15,6 +17,7 @@ class Rotas{
   ListaClientes.routeName: (context) => ListaClientes(),
   InclusaoFoto.routeName: (context) => InclusaoFoto(),
   DetalheFoto.routeName: (context) => DetalheFoto(),
-  ListaContatos.routeName: (context) => ListaContatos()
+  ListaContatos.routeName: (context) => ListaContatos(),
+  InclusaoAudio.routeName: (context) => InclusaoAudio()
   };
 }

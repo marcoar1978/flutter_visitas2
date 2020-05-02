@@ -6,6 +6,7 @@ import 'package:visitas_app5/database/daos/visita_dao.dart';
 import 'package:visitas_app5/models/visita_model.dart';
 import 'package:visitas_app5/screens/cadastro_visita.dart';
 import 'package:visitas_app5/screens/consulta_visita.dart';
+import 'package:visitas_app5/screens/inclusao_audio.dart';
 import 'package:visitas_app5/screens/inclusao_fotos.dart';
 import 'package:visitas_app5/screens/menu_drawer.dart';
 import 'package:visitas_app5/screens/tab_visitas.dart';
@@ -212,7 +213,7 @@ class _ListaVisitasState extends State<ListaVisitas> {
             builder: (context) {
               return Container(
                 width: double.maxFinite,
-                height: 200,
+                height: 250,
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -296,6 +297,27 @@ class _ListaVisitasState extends State<ListaVisitas> {
                                 Icon(Icons.camera_alt),
                                 SizedBox(width: 10),
                                 Text('Incluir/Excluir Fotos',
+                                    style: TextStyle(fontSize: 16.0)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              InclusaoAudio.routeName,
+                              arguments: visita,
+                            );
+                          },
+                          child: Center(
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.record_voice_over),
+                                SizedBox(width: 10),
+                                Text('Incluir Áudio',
                                     style: TextStyle(fontSize: 16.0)),
                               ],
                             ),
