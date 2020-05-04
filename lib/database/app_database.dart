@@ -17,7 +17,7 @@ Future<Database> getDatabase() async {
     db.execute(ContatoDao.tableSql);
     db.execute(FotosDao.tableSql);
     db.execute(AudioDao.tableSql);
-    }, version: 12,
+    }, version: 1,
     onDowngrade: onDatabaseDowngradeDelete,
   );
 }
