@@ -1,4 +1,6 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:visitas_app5/components/progress.dart';
 import 'package:visitas_app5/database/daos/audio_dao.dart';
 import 'package:visitas_app5/models/audio_model.dart';
@@ -13,9 +15,29 @@ class ListaAudios extends StatefulWidget {
   _ListaAudiosState createState() => _ListaAudiosState();
 }
 
-class _ListaAudiosState extends State<ListaAudios> {
+class _ListaAudiosState extends State<ListaAudios>
+    with SingleTickerProviderStateMixin {
   List<Audio> audios = List();
   AudioDao audioDao = AudioDao();
+  Widget iconeAudio = Icon(Icons.play_arrow);
+  AnimationController animationController;
+  bool isPlay = false;
+  AudioPlayer audioPlayer = AudioPlayer();
+
+
+  @override
+  void initState() {
+    this.animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
+
+  }
+
+  void dispose(){
+    this.animationController.dispose();
+    super.dispose();
+  }
 
   Widget _futureBuilderAudios(BuildContext context) {
     return FutureBuilder(
@@ -34,9 +56,8 @@ class _ListaAudiosState extends State<ListaAudios> {
             print('Qde audios: ${this.audios.length}');
             return ListView.builder(
               itemCount: this.audios.length,
-              itemBuilder: (context, index){
+              itemBuilder: (context, index) {
                 Audio audioIndex = this.audios[index];
-                print(index);
                 return this._cardAudio(context, audioIndex);
               },
             );
@@ -47,25 +68,81 @@ class _ListaAudiosState extends State<ListaAudios> {
     );
   }
 
-  Widget _cardAudio(BuildContext context, Audio audio){
+  Widget _cardAudio(BuildContext context, Audio audio) {
     return Card(
       elevation: 8.0,
       child: ListTile(
         title: Text('Duração: ${audio.duracao}'),
         subtitle: Text('teste'),
+        onTap: () async {
+          if(this.isPlay) this.animationController.reverse();
+          this.isPlay = false;
+          await this.audioPlayer.play(audio.arquivo, isLocal: true);
+          this._bottomPlay(context, audio);
+        },
+
       ),
     );
-
   }
+
+  Widget _bottomPlay(BuildContext context, Audio audio) {
+    showBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomSheet(
+            builder: (context) {
+              return Padding(
+                padding: const EdgeInsets.only(
+                    top: 8.0, left: 36.0, right: 36.0, bottom: 8.0),
+                child: Container(
+                  width: double.maxFinite,
+                  decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(5.0),
+                      )),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Sound'),
+                        ),
+                      ),
+                      IconButton(
+                        icon: AnimatedIcon(
+                          icon: AnimatedIcons.pause_play,
+                          progress: this.animationController,
+                        ),
+                        iconSize: 36,
+                        onPressed: () => playPauseAudio(audio),
+                      ),
+
+                    ],
+                  ),
+                ),
+              );
+            },
+            onClosing: () {},
+          );
+        });
+  }
+
+  void playPauseAudio(Audio audio) async {
+    this.isPlay = !this.isPlay;
+    if(this.isPlay) await this.audioPlayer.pause();
+    else this.audioPlayer.resume();
+    isPlay ? this.animationController.forward() : this.animationController.reverse();
+    }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(top: 16.0, left: 8.0, right: 8.0, bottom: 8.0),
+        padding: const EdgeInsets.only(
+            top: 16.0, left: 8.0, right: 8.0, bottom: 8.0),
         child: _futureBuilderAudios(context),
       ),
-
     );
   }
 }
