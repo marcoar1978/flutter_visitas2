@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:io' as io;
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
+import 'package:visitas_app5/database/daos/audio_dao.dart';
+import 'package:visitas_app5/models/audio_model.dart';
 
 import 'package:visitas_app5/models/visita_model.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
@@ -24,6 +26,8 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
   String statusGravacao = '--';
   String duracaoGravacao = '';
   String pathGravacao = '';
+  String msgGravacao = 'Iniciar gravação';
+  AudioDao audioDao = AudioDao();
 
   @override
   void initState() {
@@ -92,11 +96,22 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
 
   Future _stopRecording() async {
     var result = await _recorder.stop();
+    Audio audioInsert = Audio();
+    audioInsert.visitaId = this.visita.id;
+    audioInsert.legenda = '';
+    audioInsert.arquivo = _recording.path;
+    audioInsert.duracao = _recording.duration.inSeconds.toString();
+    await audioDao.incluir(audioInsert);
+    audioDao.listaPorVisita(this.visita.id).then((audios){
+      print(audios);
+    });
+
     setState(() {
       _recording = result;
       this.statusGravacao = _recording.status.toString();
       this.duracaoGravacao = _recording.duration.inSeconds.toString();
       this.pathGravacao = _recording.path;
+
     });
     this._prepare();
   }
@@ -106,12 +121,13 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
       case RecordingStatus.Initialized:
         {
           await _startRecording();
+          this.msgGravacao = 'Gravando';
           break;
         }
       case RecordingStatus.Recording:
         {
           await _stopRecording();
-
+          this.msgGravacao = 'Gravação finalizada ($duracaoGravacao segundos)';
           break;
         }
       /*
@@ -167,7 +183,7 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Inclusão de Áudio'),
+        title: Text(this.visita.titulo),
       ),
       body: Center(
         child: Column(
@@ -182,15 +198,13 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
             SizedBox(
               height: 15,
             ),
-            Text(this.statusGravacao),
+            Text(
+              this.msgGravacao,
+              style: TextStyle(fontSize: 16.0),
+            ),
             SizedBox(
               height: 15,
             ),
-            Text(this.pathGravacao),
-            SizedBox(
-              height: 15,
-            ),
-            Text(this.duracaoGravacao)
           ],
         ),
       ),

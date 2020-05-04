@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:visitas_app5/models/visita_model.dart';
 import 'package:visitas_app5/screens/consulta_fotos.dart';
 import 'package:visitas_app5/screens/consulta_visita.dart';
+import 'package:visitas_app5/screens/lista_audios.dart';
 
 class TabVisitas extends StatefulWidget {
   static String routeName = '/tabVisitas';
@@ -29,7 +30,12 @@ class _TabVisitasState extends State<TabVisitas> {
       ConsultaVisita(
         visita: this.visita,
       ),
-      ConsultaFotos(visita: this.visita)
+      ConsultaFotos(
+        visita: this.visita,
+      ),
+      ListaAudios(
+        visita: this.visita,
+      ),
     ];
 
     return Center(
@@ -47,9 +53,17 @@ class _TabVisitasState extends State<TabVisitas> {
         bottomNavigationBar: BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                  title: Text('Dados'), icon: Icon(Icons.assignment)),
+                title: Text('Dados'),
+                icon: Icon(Icons.assignment),
+              ),
               BottomNavigationBarItem(
-                  title: Text('Fotos'), icon: Icon(Icons.photo_camera))
+                title: Text('Fotos'),
+                icon: Icon(Icons.photo_camera),
+              ),
+              BottomNavigationBarItem(
+                title: Text('Áudios'),
+                icon: Icon(Icons.play_circle_filled)
+              ),
             ],
             currentIndex: _selectedIndex,
             onTap: (index) {
