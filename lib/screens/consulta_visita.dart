@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:visitas_app5/database/daos/audio_dao.dart';
 import 'package:visitas_app5/database/daos/cliente_dao.dart';
 import 'package:visitas_app5/database/daos/contato_dao.dart';
+import 'package:visitas_app5/database/daos/fotos_dao.dart';
 import 'package:visitas_app5/enviroment/TipoVisita.dart';
+import 'package:visitas_app5/models/audio_model.dart';
 import 'package:visitas_app5/models/cliente_model.dart';
 import 'package:visitas_app5/models/contato_model.dart';
+import 'package:visitas_app5/models/foto_model.dart';
 import 'package:visitas_app5/models/visita_model.dart';
 
 class ConsultaVisita extends StatefulWidget {
@@ -21,6 +25,10 @@ class _ConsultaVisitaState extends State<ConsultaVisita> {
   Cliente cliente;
   ClienteDao clienteDao = ClienteDao();
   TiposVisita tipoVisita;
+  List<Audio> audios = List();
+  AudioDao audioDao = AudioDao();
+  List<Foto> fotos = List();
+  FotosDao fotosDao = FotosDao();
 
   @override
   initState() {
@@ -35,6 +43,14 @@ class _ConsultaVisitaState extends State<ConsultaVisita> {
         this.cliente = c;
       });
     });
+
+    fotosDao.listaPorVisita(widget.visita.id).then((fotos) {
+      this.fotos = fotos;
+    });
+
+    audioDao.listaPorVisita(widget.visita.id).then((audios) {
+      this.audios = audios;
+    });
   }
 
   String _formataData(String data) {
@@ -47,7 +63,7 @@ class _ConsultaVisitaState extends State<ConsultaVisita> {
     return Row(
       children: <Widget>[
         Container(
-          width: 80,
+          width: 90,
           child: Text(
             label,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -58,14 +74,12 @@ class _ConsultaVisitaState extends State<ConsultaVisita> {
     );
   }
 
-  String getTipoVisita(int tipo){
-    if(tipo == 0){
+  String getTipoVisita(int tipo) {
+    if (tipo == 0) {
       return 'Reclamação';
-    }
-    else{
+    } else {
       return 'Acompanhamento';
     }
-
   }
 
   @override
@@ -131,6 +145,20 @@ class _ConsultaVisitaState extends State<ConsultaVisita> {
               'Email',
               this.contato != null ? this.contato.email : '',
             ),
+            Divider(
+              height: 32.0,
+            ),
+            _campoConsulta(
+              'Qde fotos',
+              this.fotos.length.toString(),
+            ),
+            SizedBox(
+              height: 16.0,
+            ),
+            _campoConsulta(
+              'Qde audios',
+              this.audios.length.toString(),
+            )
           ],
         ),
       ),

@@ -1,6 +1,8 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
+
 import 'package:visitas_app5/components/progress.dart';
 import 'package:visitas_app5/database/daos/audio_dao.dart';
 import 'package:visitas_app5/models/audio_model.dart';
@@ -24,17 +26,15 @@ class _ListaAudiosState extends State<ListaAudios>
   bool isPlay = false;
   AudioPlayer audioPlayer = AudioPlayer();
 
-
   @override
   void initState() {
     this.animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 300),
     );
-
   }
 
-  void dispose(){
+  void dispose() {
     this.animationController.dispose();
     super.dispose();
   }
@@ -69,20 +69,46 @@ class _ListaAudiosState extends State<ListaAudios>
   }
 
   Widget _cardAudio(BuildContext context, Audio audio) {
+    var campoLegendaData = audio.legenda.split('-');
+
     return Card(
       elevation: 8.0,
       child: ListTile(
-        title: Text('Duração: ${audio.duracao}'),
-        subtitle: Text('teste'),
+        title: Text('${campoLegendaData[0]}'),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            //Text('${campoLegendaData[1]}'),
+            Text(_formataTime(audio.duracao)),
+          ],
+        ),
         onTap: () async {
-          if(this.isPlay) this.animationController.reverse();
+          if (this.isPlay) this.animationController.reverse();
           this.isPlay = false;
           await this.audioPlayer.play(audio.arquivo, isLocal: true);
           this._bottomPlay(context, audio);
         },
-
       ),
     );
+  }
+
+  String _formataTime(String segundos) {
+    int segundosInt = int.tryParse(segundos);
+    String min;
+    String segFormat;
+
+    if (segundosInt % 60 > 0) {
+      min = (segundosInt / 60).floor().toString();
+      int seg = (segundosInt % 60).floor();
+      segFormat = (seg >= 10) ? seg.toString() : '0${seg.toString()}';
+    } else {
+      min = '0';
+      segFormat = (segundosInt >= 10)
+          ? segundosInt.toString()
+          : '0${segundosInt.toString()}';
+    }
+
+    return '${min}:${segFormat}';
   }
 
   Widget _bottomPlay(BuildContext context, Audio audio) {
@@ -106,7 +132,7 @@ class _ListaAudiosState extends State<ListaAudios>
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text('Sound'),
+                          child: Text('${audio.legenda}'),
                         ),
                       ),
                       IconButton(
@@ -117,7 +143,6 @@ class _ListaAudiosState extends State<ListaAudios>
                         iconSize: 36,
                         onPressed: () => playPauseAudio(audio),
                       ),
-
                     ],
                   ),
                 ),
@@ -130,10 +155,14 @@ class _ListaAudiosState extends State<ListaAudios>
 
   void playPauseAudio(Audio audio) async {
     this.isPlay = !this.isPlay;
-    if(this.isPlay) await this.audioPlayer.pause();
-    else this.audioPlayer.resume();
-    isPlay ? this.animationController.forward() : this.animationController.reverse();
-    }
+    if (this.isPlay)
+      await this.audioPlayer.pause();
+    else
+      this.audioPlayer.resume();
+    isPlay
+        ? this.animationController.forward()
+        : this.animationController.reverse();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -491,7 +491,9 @@ class _CadastroVisitaState extends State<CadastroVisita> {
               campoData(),
               campoTipoAcompanhamento(context),
               campoTitulo(),
+              SizedBox(height: 15,),
               selCliente(),
+              SizedBox(height: 15,),
               selContato(),
               SizedBox(
                 height: 30,

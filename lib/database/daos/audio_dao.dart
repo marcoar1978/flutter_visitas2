@@ -33,7 +33,7 @@ class AudioDao {
     Database db = await getDatabase();
     List<Audio> audios = List();
     List<Map<String, dynamic>> audiosMap = await db.rawQuery(
-        "SELECT * FROM $_tableName WHERE visitaId = $visitaId ORDER BY id DESC");
+        "SELECT * FROM $_tableName WHERE visitaId = $visitaId ORDER BY id");
     for (Map<String, dynamic> audioMap in audiosMap) {
       Audio audio = Audio();
       audio.id = audioMap[_id];

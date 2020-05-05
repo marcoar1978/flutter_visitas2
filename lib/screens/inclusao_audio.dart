@@ -28,6 +28,7 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
   String pathGravacao = '';
   String msgGravacao = 'Iniciar gravação';
   AudioDao audioDao = AudioDao();
+  List<Audio> audios;
 
   @override
   void initState() {
@@ -95,23 +96,25 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
   }
 
   Future _stopRecording() async {
+    DateTime now = DateTime.now();
+    int dia = now.day;
+    int mes = now.month;
+    int ano = now.year;
+    String data = '$dia/$mes/$ano';
+
     var result = await _recorder.stop();
     Audio audioInsert = Audio();
     audioInsert.visitaId = this.visita.id;
-    audioInsert.legenda = '';
+    audioInsert.legenda = 'Áudio ${this.audios.length + 1} -$data';
     audioInsert.arquivo = _recording.path;
     audioInsert.duracao = _recording.duration.inSeconds.toString();
     await audioDao.incluir(audioInsert);
-    audioDao.listaPorVisita(this.visita.id).then((audios){
-      print(audios);
-    });
 
     setState(() {
       _recording = result;
       this.statusGravacao = _recording.status.toString();
       this.duracaoGravacao = _recording.duration.inSeconds.toString();
       this.pathGravacao = _recording.path;
-
     });
     this._prepare();
   }
@@ -180,6 +183,9 @@ class _InclusaoAudioState extends State<InclusaoAudio> {
   @override
   Widget build(BuildContext context) {
     this._recebeParamVisita(context);
+    this.audioDao.listaPorVisita(this.visita.id).then((audiosFuture) {
+      this.audios = audiosFuture;
+    });
 
     return Scaffold(
       appBar: AppBar(

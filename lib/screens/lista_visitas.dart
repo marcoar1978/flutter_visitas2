@@ -271,7 +271,7 @@ class _ListaVisitasState extends State<ListaVisitas> {
                           onTap: () {
                             Navigator.of(context).pushNamed(
                               CadastroVisita.routeName,
-                             arguments: visita,
+                              arguments: visita,
                             );
                           },
                           child: Center(
@@ -372,7 +372,6 @@ class _ListaVisitasState extends State<ListaVisitas> {
           });
         },
       ),
-
     );
   }
 

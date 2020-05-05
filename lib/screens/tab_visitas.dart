@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:visitas_app5/database/daos/audio_dao.dart';
+import 'package:visitas_app5/database/daos/fotos_dao.dart';
+import 'package:visitas_app5/models/audio_model.dart';
+import 'package:visitas_app5/models/foto_model.dart';
 import 'package:visitas_app5/models/visita_model.dart';
 import 'package:visitas_app5/screens/consulta_fotos.dart';
 import 'package:visitas_app5/screens/consulta_visita.dart';
@@ -14,6 +18,7 @@ class TabVisitas extends StatefulWidget {
 class _TabVisitasState extends State<TabVisitas> {
   Visita visita;
   int _selectedIndex = 0;
+  List<Audio> audios = List();
 
   void recebeParamVisita() {
     if (ModalRoute.of(context).settings.arguments != null &&
@@ -61,9 +66,7 @@ class _TabVisitasState extends State<TabVisitas> {
                 icon: Icon(Icons.photo_camera),
               ),
               BottomNavigationBarItem(
-                title: Text('Áudios'),
-                icon: Icon(Icons.play_circle_filled)
-              ),
+                  title: Text('Áudios'), icon: Icon(Icons.play_circle_filled)),
             ],
             currentIndex: _selectedIndex,
             onTap: (index) {
