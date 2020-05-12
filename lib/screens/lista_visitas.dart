@@ -29,6 +29,9 @@ class _ListaVisitasState extends State<ListaVisitas> {
   List<Visita> visitas = List();
   int qdeFotos;
   List<Foto> fotos = List();
+  AudioDao audioDao = AudioDao();
+  int qdeAudios;
+  List<Audio> audios = List();
 
   Widget _listaVisitas(BuildContext context) {
     return FutureBuilder(
@@ -107,7 +110,7 @@ class _ListaVisitasState extends State<ListaVisitas> {
     return Dismissible(
       key: Key(visita.id.toString()),
       background: Container(
-        decoration: BoxDecoration(color: Colors.green),
+        decoration: BoxDecoration(color: Colors.amber),
         child: Align(
           alignment: Alignment(-0.9, 0.0),
           child: Icon(
@@ -119,7 +122,8 @@ class _ListaVisitasState extends State<ListaVisitas> {
       direction: DismissDirection.startToEnd,
       child: this._cardLista(context, visita, intQdeFotos),
       onDismissed: (d) async {
-        if (intQdeFotos > 0) {
+        List<Audio> listaAudios = await this.audioDao.listaPorVisita(visita.id);
+        if ((intQdeFotos > 0) || (listaAudios.length > 0)) {
           showDialog(
             context: context,
             builder: (context) {
@@ -155,7 +159,7 @@ class _ListaVisitasState extends State<ListaVisitas> {
         height: 50,
         child: Column(
           children: <Widget>[
-            Text('Há fotos cadastradas.'),
+            Text('Há fotos ou audios.'),
             Text('Não é possível excluir esta visita'),
           ],
         ),
@@ -215,7 +219,7 @@ class _ListaVisitasState extends State<ListaVisitas> {
             builder: (context) {
               return Container(
                 width: double.maxFinite,
-                height: 250,
+                height: (MediaQuery.of(context).size.height/2) + 30 ,
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -231,123 +235,178 @@ class _ListaVisitasState extends State<ListaVisitas> {
                     )
                   ],
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                            child: Text(
-                          visita.titulo,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
-                              fontSize: 16.0),
-                        )),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                            child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                                TabVisitas.routeName,
-                                arguments: visita);
-                          },
-                          child: Row(
-                            children: <Widget>[
-                              Icon(Icons.zoom_in),
-                              SizedBox(width: 10),
-                              Text('Visualizar',
-                                  style: TextStyle(fontSize: 16.0)),
-                            ],
-                          ),
-                        )),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                              CadastroVisita.routeName,
-                              arguments: visita,
-                            );
-                          },
-                          child: Center(
-                              child: Row(
-                            children: <Widget>[
-                              Icon(Icons.edit),
-                              SizedBox(width: 10),
-                              Text('Editar', style: TextStyle(fontSize: 16.0)),
-                            ],
-                          )),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                              InclusaoFoto.routeName,
-                              arguments: visita,
-                            );
-                          },
-                          child: Center(
-                            child: Row(
-                              children: <Widget>[
-                                Icon(Icons.camera_alt),
-                                SizedBox(width: 10),
-                                Text('Incluir/Excluir Fotos',
-                                    style: TextStyle(fontSize: 16.0)),
-                              ],
+                child: ListView(
+                  //mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Center(
+                          child: Container(
+                        child: Column(
+                          children: <Widget>[
+                            Text(
+                              visita.titulo,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).primaryColor,
+                                  fontSize: 16.0),
                             ),
-                          ),
+                          ],
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(
-                              InclusaoAudio.routeName,
-                              arguments: visita,
-                            );
-                          },
-                          child: Center(
-                            child: Row(
-                              children: <Widget>[
-                                Icon(Icons.record_voice_over),
-                                SizedBox(width: 10),
-                                Text('Incluir Áudio',
-                                    style: TextStyle(fontSize: 16.0)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Center(
-                            child: Row(
-                              children: <Widget>[
-                                Icon(Icons.close),
-                                SizedBox(
-                                  width: 10,
+                      )),
+                    ),
+                    Container(
+                      height: 200,
+                      child: GridView.count(
+                        childAspectRatio: 2.0,
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 2.0,
+                        mainAxisSpacing: 2.0,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Card(
+                              child: Container(
+                                height: 50,
+                                //width: 150,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pushNamed(
+                                        TabVisitas.routeName,
+                                        arguments: visita);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Icon(Icons.zoom_in),
+                                        SizedBox(width: 10),
+                                        Text('Visualizar',
+                                            style: TextStyle(fontSize: 16.0)),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                Text('Fechar',
-                                    style: TextStyle(fontSize: 16.0)),
-                              ],
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pushNamed(
+                                  CadastroVisita.routeName,
+                                  arguments: visita,
+                                );
+                              },
+                              child: Card(
+                                child: Container(
+                                    //width: 150,
+                                    height: 50,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(Icons.edit),
+                                          SizedBox(width: 10),
+                                          Text('Editar',
+                                              style: TextStyle(fontSize: 16.0)),
+                                        ],
+                                      ),
+                                    )),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pushNamed(
+                                  InclusaoFoto.routeName,
+                                  arguments: visita,
+                                );
+                              },
+                              child: Card(
+                                child: Container(
+                                  //width: 150,
+                                  height: 50,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Icon(Icons.camera_alt),
+                                        SizedBox(width: 10),
+                                        Text('Incluir Fotos',
+                                            style: TextStyle(fontSize: 16.0)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pushNamed(
+                                  InclusaoAudio.routeName,
+                                  arguments: visita,
+                                );
+                              },
+                              child: Card(
+                                child: Container(
+                                  //width: 150,
+                                  height: 50,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Icon(Icons.record_voice_over),
+                                        SizedBox(width: 10),
+                                        Text('Incluir Áudio',
+                                            style: TextStyle(fontSize: 16.0)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Card(
+                          child: Container(
+                            height: 50,
+                            //width: 150,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                children: <Widget>[
+                                  Icon(Icons.close),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text('Fechar',
+                                      style: TextStyle(fontSize: 16.0)),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
             },

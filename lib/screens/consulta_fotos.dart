@@ -34,11 +34,50 @@ class _ConsultaFotosState extends State<ConsultaFotos> {
 
   Widget_listaFotos(BuildContext context) {
     return ListView.builder(
-        itemCount: this.fotos.length,
-        itemBuilder: (context, index) {
-          Foto fotoItem = this.fotos[index];
-          return _cardFoto(context, fotoItem);
-        });
+      itemCount: this.fotos.length,
+      itemBuilder: (context, index) {
+        Foto fotoItem = this.fotos[index];
+        return _cardFoto(context, fotoItem);
+      },
+    );
+  }
+
+  Widget _dismissFoto(BuildContext context, Foto foto) {
+    return Dismissible(
+      key: Key(foto.id.toString()),
+      background: Container(
+        decoration: BoxDecoration(
+          color: Colors.amber,
+        ),
+        child: Align(
+          alignment: Alignment(-0.9, 0.0),
+          child: Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      direction: DismissDirection.startToEnd,
+      child: this._cardFoto(context, foto),
+      onDismissed: (d) async {
+        await this.fotosDao.delete(foto);
+        var snack = SnackBar(
+          content: Text('Foto deletada'),
+          action: SnackBarAction(
+            label: 'Desfazer',
+            onPressed: () async {
+              Foto fotoInsert = await this.fotosDao.incluir(foto);
+              List<Foto> listaFotos =
+                  await this.fotosDao.listaPorVisita(foto.visitaId);
+              setState(() {
+                this.fotos = listaFotos;
+              });
+            },
+          ),
+        );
+        Scaffold.of(context).showSnackBar(snack);
+      },
+    );
   }
 
   Widget _cardFoto(BuildContext context, Foto foto) {
@@ -49,7 +88,7 @@ class _ConsultaFotosState extends State<ConsultaFotos> {
 
   Widget _containerFoto(BuildContext context, Foto foto) {
     return GestureDetector(
-      onLongPress: () {
+      onTap: () {
         print('event 2');
         Navigator.of(context).pushNamed(DetalheFoto.routeName, arguments: foto);
       },

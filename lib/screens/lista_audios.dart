@@ -58,12 +58,51 @@ class _ListaAudiosState extends State<ListaAudios>
               itemCount: this.audios.length,
               itemBuilder: (context, index) {
                 Audio audioIndex = this.audios[index];
-                return this._cardAudio(context, audioIndex);
+                return this._dismissAudio(context, audioIndex);
               },
             );
             break;
         }
         return Text('');
+      },
+    );
+  }
+
+  Widget _dismissAudio(BuildContext context, Audio audio) {
+    return Dismissible(
+      key: Key(audio.id.toString()),
+      background: Container(
+        decoration: BoxDecoration(
+          color: Colors.amber,
+        ),
+        child: Align(
+          alignment: Alignment(-0.9, 0.0),
+          child: Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      direction: DismissDirection.startToEnd,
+      child: this._cardAudio(context, audio),
+      onDismissed: (d) async {
+        await this.audioDao.deletar(audio);
+        var snack = SnackBar(
+          content: Text('Áudio excluído'),
+          action: SnackBarAction(
+            label: 'Desfazer',
+            onPressed: () async {
+              Audio audioInsert = await this.audioDao.incluir(audio);
+              List<Audio> listaAudios =
+                  await this.audioDao.listaPorVisita(audio.visitaId);
+              setState(() {
+                this.audios = listaAudios;
+              });
+            },
+          ),
+          duration: Duration(seconds: 3),
+        );
+        Scaffold.of(context).showSnackBar(snack);
       },
     );
   }

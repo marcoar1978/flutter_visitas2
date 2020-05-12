@@ -29,6 +29,15 @@ class AudioDao {
     return audio;
   }
 
+  Future<int> deletar(Audio audio) async {
+    Database db = await getDatabase();
+    return await db.delete(
+      _tableName,
+      where: 'id = ?',
+      whereArgs: [audio.id],
+    );
+  }
+
   Future<List<Audio>> listaPorVisita(int visitaId) async {
     Database db = await getDatabase();
     List<Audio> audios = List();

@@ -27,7 +27,7 @@ class _DetalheFotoState extends State<DetalheFoto> {
     this._recebeParamVisita();
     return Scaffold(
       body: GestureDetector(
-        onLongPress: () {
+        onTap: () {
           Navigator.pop(context);
         },
         child: Card(
